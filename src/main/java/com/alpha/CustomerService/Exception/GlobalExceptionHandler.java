@@ -15,4 +15,11 @@ public class GlobalExceptionHandler {
 		rs.setMessage("Customer Not Exist With Id");
 		rs.setData("Customer Not Found");
 	}
+	@ExceptionHandler(CustomerAlreadyExist.class)
+	public void CustomerAlreadyExistExecption() {
+		ResponceStructure<String> rs = new ResponceStructure<String>();
+		rs.setStatusCode(HttpStatus.NOT_FOUND.value());
+		rs.setMessage("Customer Already Exist With Id");
+		rs.setData("Customer Already Found");
+	}
 }

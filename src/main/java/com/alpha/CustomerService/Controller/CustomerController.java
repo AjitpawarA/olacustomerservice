@@ -1,5 +1,7 @@
 package com.alpha.CustomerService.Controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alpha.CustomerService.Dto.CustomerDto;
 import com.alpha.CustomerService.Dto.ResponceStructure;
+import com.alpha.CustomerService.Dto.SearchDestinationResponeDto;
+import com.alpha.CustomerService.Dto.SelectRideDTO;
 import com.alpha.CustomerService.Entity.Customer;
 import com.alpha.CustomerService.Service.CustomerService;
 
@@ -31,5 +35,13 @@ public class CustomerController {
 	@GetMapping("/customer/findcustomer/{id}")
 	public Customer findCustomer(@PathVariable int id) {
 		return customerService.findCustomer(id);
+	}
+	@GetMapping("/customer/searchdroplocation")
+	public ResponceStructure<List<SearchDestinationResponeDto>> searchdroplocation(@RequestParam String Searchkey) {
+		return customerService.searchdroplocation(Searchkey);
+	}
+	@GetMapping("/customer/selectride")
+	public void selectride(@RequestBody SelectRideDTO selectRideDTO) {
+		customerService.selectRide(selectRideDTO);
 	}
 }
