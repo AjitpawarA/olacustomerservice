@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alpha.CustomerService.Dto.CustomerDto;
 import com.alpha.CustomerService.Dto.ResponceStructure;
+import com.alpha.CustomerService.Dto.RidefairDTO;
 import com.alpha.CustomerService.Dto.SearchDestinationResponeDto;
 import com.alpha.CustomerService.Dto.SelectRideDTO;
 import com.alpha.CustomerService.Entity.Customer;
@@ -41,7 +42,7 @@ public class CustomerController {
 		return customerService.searchdroplocation(Searchkey);
 	}
 	@GetMapping("/customer/selectride")
-	public void selectride(@RequestBody SelectRideDTO selectRideDTO) {
-		customerService.selectRide(selectRideDTO);
+	public ResponceStructure<RidefairDTO> selectride(@RequestBody SelectRideDTO selectRideDTO) {
+		return customerService.selectRide(selectRideDTO);
 	}
 }
