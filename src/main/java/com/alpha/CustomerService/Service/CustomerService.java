@@ -90,14 +90,13 @@ public class CustomerService {
 
 		return response;
 	}
-
-	public void selectRide(SelectRideDTO selectRideDTO) {
+	public ResponceStructure<RidefairDTO> selectRide(SelectRideDTO selectRideDTO) {
 		String url = "https://us1.locationiq.com/v1/directions/driving/"
 				+ selectRideDTO.getSourcelocation().getLongitude() + ","
 				+ selectRideDTO.getSourcelocation().getLatitude() + ";"
 				+ selectRideDTO.getDestinationlocation().getLongitude() + ","
 				+ selectRideDTO.getDestinationlocation().getLatitude()
-				+ "?key=pk.9cae04b25eb1f3eef542e54e8ba4f653&steps=true&alternatives=true&geometries=polyline&overview=full&";
+				+ "?key=pk.ee69342003ac6bc7ebb859fb52baf933&steps=true&alternatives=true&geometries=polyline&overview=full&";
 		System.out.println(url);
 
 		Map<String, Object> response = restTemplate.getForObject(url, Map.class);
@@ -107,14 +106,20 @@ public class CustomerService {
 		if (routes != null && !routes.isEmpty()) {
 			Map<String, Object> firstRoute = routes.get(0);
 			RidefairDTO ridefairDTO = new RidefairDTO();
-			ridefairDTO.setDistance(Double.parseDouble((String) firstRoute.get("distance")));
-			ridefairDTO.setDuration(Double.parseDouble((String) firstRoute.get("duration")));
-			Object distance = firstRoute.get("distance");
-			Object duration = firstRoute.get("duration");
-			System.out.println("Distance: " + distance);
-			System.out.println("Duration: " + duration);
+			double distanceMeters = ((Number) firstRoute.get("distance")).doubleValue();
+	        double durationSeconds = ((Number) firstRoute.get("duration")).doubleValue();
+			ridefairDTO.setDistance(distanceMeters/1000);
+			ridefairDTO.setDuration(durationSeconds/60);			
+			
+			ResponceStructure<RidefairDTO> responceStructure = new ResponceStructure<RidefairDTO>();
+			responceStructure.setStatusCode(HttpStatus.ACCEPTED.value());
+			responceStructure.setMessage("The ride details are : ");
+			responceStructure.setData(ridefairDTO);
+			return responceStructure;
+
 		}
 
-	}
+		return null;
 
+	}
 }
