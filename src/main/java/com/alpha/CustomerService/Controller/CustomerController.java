@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alpha.CustomerService.Dto.CustomerDto;
+import com.alpha.CustomerService.Dto.FairPriceAllVehicles;
 import com.alpha.CustomerService.Dto.ResponceStructure;
 import com.alpha.CustomerService.Dto.RidefairDTO;
 import com.alpha.CustomerService.Dto.SearchDestinationResponeDto;
@@ -42,7 +43,12 @@ public class CustomerController {
 		return customerService.searchdroplocation(Searchkey);
 	}
 	@GetMapping("/customer/selectride")
-	public ResponceStructure<RidefairDTO> selectride(@RequestBody SelectRideDTO selectRideDTO) {
+	public ResponceStructure<FairPriceAllVehicles> selectride(@RequestBody SelectRideDTO selectRideDTO) {
 		return customerService.selectRide(selectRideDTO);
+	}
+	
+	@PostMapping("/customer/Booking")
+	public void BookRide(@RequestParam int custId, String vehicle) {
+		customerService.bookRide(custId,vehicle);
 	}
 }

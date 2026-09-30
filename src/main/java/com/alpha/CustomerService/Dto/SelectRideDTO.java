@@ -3,10 +3,12 @@ package com.alpha.CustomerService.Dto;
 import com.alpha.CustomerService.Entity.Cordinate;
 
 public class SelectRideDTO {
+	private int custid;
 	private Cordinate sourcelocation;
 	private  Cordinate destinationlocation;
-	public SelectRideDTO(Cordinate sourcelocation, Cordinate destinationlocation) {
+	public SelectRideDTO(int custid,Cordinate sourcelocation, Cordinate destinationlocation) {
 		super();
+		this.custid=custid;
 		this.sourcelocation = sourcelocation;
 		this.destinationlocation = destinationlocation;
 	}
@@ -24,6 +26,12 @@ public class SelectRideDTO {
 	}
 	public void setDestinationlocation(Cordinate destinationlocation) {
 		this.destinationlocation = destinationlocation;
+	}
+	public int getCustid() {
+		return custid;
+	}
+	public void setCustid(int custid) {
+		this.custid = custid;
 	}
 	
 }

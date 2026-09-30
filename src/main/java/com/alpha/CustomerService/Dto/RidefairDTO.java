@@ -1,12 +1,14 @@
 package com.alpha.CustomerService.Dto;
 
 public class RidefairDTO {
+	private int custid;
 	private double distance;
 	private double duration;
 	private String vehicletype;
 	private double price;
-	public RidefairDTO(double distance, double duration, String vehicletype, double price) {
+	public RidefairDTO(int custid,double distance, double duration, String vehicletype, double price) {
 		super();
+		this.custid=custid;
 		this.distance = distance;
 		this.duration = duration;
 		this.vehicletype = vehicletype;
@@ -14,6 +16,13 @@ public class RidefairDTO {
 	}
 	public RidefairDTO() {
 		super();
+	}
+	
+	public int getCustid() {
+		return custid;
+	}
+	public void setCustid(int custid) {
+		this.custid = custid;
 	}
 	public double getDistance() {
 		return distance;

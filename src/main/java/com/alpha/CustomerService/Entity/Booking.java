@@ -17,10 +17,12 @@ public class Booking {
 	private int id;
 	@ManyToOne
 	private Customer customer;
+	private String destinationLoc;
+	private String pickupLoc;
 	@OneToOne
-	private Address destinationLoc;
+	private Cordinate desCordinate;
 	@OneToOne
-	private Address pickupLoc;
+	private Cordinate sourceCordinate;
 	private String PaymentType;
 	private String vechicType;
 	private int riderId;
@@ -31,13 +33,16 @@ public class Booking {
 	public Booking() {
 		super();
 	}
-	public Booking(int id, Customer customer, Address destinationLoc, Address pickupLoc, String paymentType,
-			String vechicType, int riderId, String bookingdate, String bookingtime, String dropTime, double fare) {
+	public Booking(int id, Customer customer, String destinationLoc, String pickupLoc, Cordinate desCordinate,
+			Cordinate sourceCordinate, String paymentType, String vechicType, int riderId, String bookingdate,
+			String bookingtime, String dropTime, double fare) {
 		super();
 		this.id = id;
 		this.customer = customer;
 		this.destinationLoc = destinationLoc;
 		this.pickupLoc = pickupLoc;
+		this.desCordinate = desCordinate;
+		this.sourceCordinate = sourceCordinate;
 		PaymentType = paymentType;
 		this.vechicType = vechicType;
 		this.riderId = riderId;
@@ -58,17 +63,29 @@ public class Booking {
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
 	}
-	public Address getDestinationLoc() {
+	public String getDestinationLoc() {
 		return destinationLoc;
 	}
-	public void setDestinationLoc(Address destinationLoc) {
+	public void setDestinationLoc(String destinationLoc) {
 		this.destinationLoc = destinationLoc;
 	}
-	public Address getPickupLoc() {
+	public String getPickupLoc() {
 		return pickupLoc;
 	}
-	public void setPickupLoc(Address pickupLoc) {
+	public void setPickupLoc(String pickupLoc) {
 		this.pickupLoc = pickupLoc;
+	}
+	public Cordinate getDesCordinate() {
+		return desCordinate;
+	}
+	public void setDesCordinate(Cordinate desCordinate) {
+		this.desCordinate = desCordinate;
+	}
+	public Cordinate getSourceCordinate() {
+		return sourceCordinate;
+	}
+	public void setSourceCordinate(Cordinate sourceCordinate) {
+		this.sourceCordinate = sourceCordinate;
 	}
 	public String getPaymentType() {
 		return PaymentType;
@@ -112,5 +129,6 @@ public class Booking {
 	public void setFare(double fare) {
 		this.fare = fare;
 	}
+	
 	
 }

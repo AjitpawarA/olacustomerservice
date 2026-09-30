@@ -15,5 +15,4 @@ public class CustomerServiceApplication {
 	public RestTemplate rest() {
 		return new RestTemplate();
 	}
-
 }

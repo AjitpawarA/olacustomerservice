@@ -10,10 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.alpha.CustomerService.Dto.CustomerDto;
+import com.alpha.CustomerService.Dto.FairPriceAllVehicles;
+import com.alpha.CustomerService.Dto.Fairprice;
 import com.alpha.CustomerService.Dto.ResponceStructure;
 import com.alpha.CustomerService.Dto.RidefairDTO;
 import com.alpha.CustomerService.Dto.SearchDestinationResponeDto;
 import com.alpha.CustomerService.Dto.SelectRideDTO;
+import com.alpha.CustomerService.Entity.Booking;
 import com.alpha.CustomerService.Entity.Customer;
 import com.alpha.CustomerService.Exception.CustomerNotExist;
 import com.alpha.CustomerService.Repository.Cardinationrepository;
@@ -25,6 +28,8 @@ public class CustomerService {
 	private CustomerRepositor customerRepositor;
 	@Autowired
 	private Cardinationrepository cardinationrepository;
+	@Autowired
+	private RedisService redisserver;
 
 	public Customer CreateCustomer(CustomerDto custDto) {
 		Customer c = new Customer();
@@ -90,36 +95,95 @@ public class CustomerService {
 
 		return response;
 	}
-	public ResponceStructure<RidefairDTO> selectRide(SelectRideDTO selectRideDTO) {
+	public ResponceStructure<FairPriceAllVehicles> selectRide(SelectRideDTO selectRideDTO) {
 		String url = "https://us1.locationiq.com/v1/directions/driving/"
 				+ selectRideDTO.getSourcelocation().getLongitude() + ","
 				+ selectRideDTO.getSourcelocation().getLatitude() + ";"
 				+ selectRideDTO.getDestinationlocation().getLongitude() + ","
 				+ selectRideDTO.getDestinationlocation().getLatitude()
 				+ "?key=pk.ee69342003ac6bc7ebb859fb52baf933&steps=true&alternatives=true&geometries=polyline&overview=full&";
-		System.out.println(url);
-
 		Map<String, Object> response = restTemplate.getForObject(url, Map.class);
-
-		// Extract routes
+		Customer c = customerRepositor.findById(selectRideDTO.getCustid()).orElseThrow(()-> new CustomerNotExist());
+		// Extract routes from the api
 		List<Map<String, Object>> routes = (List<Map<String, Object>>) response.get("routes");
 		if (routes != null && !routes.isEmpty()) {
 			Map<String, Object> firstRoute = routes.get(0);
-			RidefairDTO ridefairDTO = new RidefairDTO();
-			double distanceMeters = ((Number) firstRoute.get("distance")).doubleValue();
-	        double durationSeconds = ((Number) firstRoute.get("duration")).doubleValue();
-			ridefairDTO.setDistance(distanceMeters/1000);
-			ridefairDTO.setDuration(durationSeconds/60);			
-			
-			ResponceStructure<RidefairDTO> responceStructure = new ResponceStructure<RidefairDTO>();
-			responceStructure.setStatusCode(HttpStatus.ACCEPTED.value());
-			responceStructure.setMessage("The ride details are : ");
-			responceStructure.setData(ridefairDTO);
-			return responceStructure;
+			int custId = selectRideDTO.getCustid();
+			double distance =(((Number) firstRoute.get("distance")).doubleValue())/1000;
+			double duration=(((Number) firstRoute.get("duration")).doubleValue())/60;	
+			double bikePrice = calculateFare(Fairprice.BIKE, distance, duration);
+	        double autoPrice = calculateFare(Fairprice.AUTO, distance, duration);
+	        double cabPrice = calculateFare(Fairprice.CAB, distance, duration);
+	        String pickup =selectRideDTO.getSourcelocation().getLatitude()+ "," +selectRideDTO.getSourcelocation().getLongitude();
+	        String destination =selectRideDTO.getDestinationlocation().getLatitude()+ "," +selectRideDTO.getDestinationlocation().getLongitude();
+	        
+	        redisserver.saveRideDetails(custId,pickup,destination,distance,duration,bikePrice,autoPrice,cabPrice);
+	        ResponceStructure<FairPriceAllVehicles> rs = new ResponceStructure<FairPriceAllVehicles>();
+	        FairPriceAllVehicles fp = new FairPriceAllVehicles();
+	        fp.setDistance(distance);
+	        fp.setDuration(duration);
+	        fp.setBikePrice(bikePrice);
+	        fp.setAutoPrice(autoPrice);
+	        fp.setCarPrice(cabPrice);
+	        fp.setPickupLocation(pickup);
+	        fp.setDestinationLocation(destination);
+	        
+	        rs.setStatusCode(HttpStatus.FOUND.value());
+	        rs.setMessage("Select the Vehicle According to you fare");
+	        rs.setData(fp);
+	        return rs;
+			}
+        ResponceStructure<FairPriceAllVehicles> rs = new ResponceStructure<FairPriceAllVehicles>();
+        rs.setStatusCode(HttpStatus.NOT_FOUND.value());
+		rs.setMessage("Route Not Found");
+		rs.setData(null);
+		return rs;
+		}
+	
+	
+	
+		private double calculateFare(Fairprice vehicle,double distance,double duration) {
+		    double baseFare = 0;
+		    double pricePerKm = 0;
+		    double pricePerMinute = 0;
+		    switch (vehicle) {
+		        case BIKE:
+		            baseFare = 20;
+		            pricePerKm = 8;
+		            pricePerMinute = 1;
+		            break;
 
+		        case AUTO:
+		            baseFare = 30;
+		            pricePerKm = 12;
+		            pricePerMinute = 1.5;
+		            break;
+
+		        case CAB:
+		            baseFare = 50;
+		            pricePerKm = 18;
+		            pricePerMinute = 2;
+		            break;
+		    }
+
+		    return baseFare+ (distance * pricePerKm)+ (duration * pricePerMinute);
 		}
 
-		return null;
-
-	}
+		public void bookRide(int custId, String vehicle) {
+			Customer c = customerRepositor.findById(custId).orElseThrow(()-> new CustomerNotExist());
+			Map<Object, Object> rideData =redisserver.getRideDetails(custId);
+			Booking b = new Booking();
+			String pickup = (String) rideData.get("pickupLocation");
+			String destination = (String) rideData.get("destinationLocation");
+//			double distance = Double.parseDouble((String) rideData.get("distance"));
+//			double duration = Double.parseDouble((String) rideData.get("duration"));
+//			double bikePrice = Double.parseDouble((String) rideData.get("bikePrice"));
+//			double autoPrice = Double.parseDouble((String) rideData.get("autoPrice"));
+//			double cabPrice = Double.parseDouble((String) rideData.get("cabPrice"));
+			System.out.println(pickup);
+			System.out.println(destination);
+		}
+		
+		
+		
 }
