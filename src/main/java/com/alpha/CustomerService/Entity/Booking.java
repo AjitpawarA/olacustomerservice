@@ -3,6 +3,7 @@ package com.alpha.CustomerService.Entity;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,15 +16,15 @@ public class Booking {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	private Customer customer;
 	private String destinationLoc;
 	private String pickupLoc;
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	private Cordinate desCordinate;
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	private Cordinate sourceCordinate;
-	private String PaymentType;
+	private String paymentType;
 	private String vechicType;
 	private int riderId;
 	private String bookingdate;
@@ -43,7 +44,7 @@ public class Booking {
 		this.pickupLoc = pickupLoc;
 		this.desCordinate = desCordinate;
 		this.sourceCordinate = sourceCordinate;
-		PaymentType = paymentType;
+		this.paymentType = paymentType;
 		this.vechicType = vechicType;
 		this.riderId = riderId;
 		this.bookingdate = bookingdate;
@@ -88,10 +89,10 @@ public class Booking {
 		this.sourceCordinate = sourceCordinate;
 	}
 	public String getPaymentType() {
-		return PaymentType;
+		return paymentType;
 	}
 	public void setPaymentType(String paymentType) {
-		PaymentType = paymentType;
+		this.paymentType = paymentType;
 	}
 	public String getVechicType() {
 		return vechicType;

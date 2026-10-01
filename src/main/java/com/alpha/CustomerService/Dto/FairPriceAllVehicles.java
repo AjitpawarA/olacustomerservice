@@ -1,9 +1,14 @@
 package com.alpha.CustomerService.Dto;
 
+import java.util.List;
+
+import com.alpha.CustomerService.Entity.Cordinate;
+
 public class FairPriceAllVehicles {
 	private long rideId; 
 	private String pickupLocation;
 	private String destinationLocation;
+	List<Double> cordinates;
 	private double distance;
 	private double duration;
 	private double bikePrice;
@@ -12,10 +17,11 @@ public class FairPriceAllVehicles {
 	public FairPriceAllVehicles() {
 		super();
 	}
-	public FairPriceAllVehicles(long rideId, String pickupLocation, String destinationLocation, double distance,
+	public FairPriceAllVehicles(long rideId,List<Double> cordinates, String pickupLocation, String destinationLocation, double distance,
 			double duration, double bikePrice, double autoPrice, double carPrice) {
 		super();
 		this.rideId = rideId;
+		this.cordinates=cordinates;
 		this.pickupLocation = pickupLocation;
 		this.destinationLocation = destinationLocation;
 		this.distance = distance;
@@ -29,6 +35,13 @@ public class FairPriceAllVehicles {
 	}
 	public void setRideId(long rideId) {
 		this.rideId = rideId;
+	}
+	
+	public List<Double> getCordinates() {
+		return cordinates;
+	}
+	public void setCordinates(List<Double> cordinates) {
+		this.cordinates = cordinates;
 	}
 	public String getPickupLocation() {
 		return pickupLocation;

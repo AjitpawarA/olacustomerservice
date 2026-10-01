@@ -17,6 +17,7 @@ import com.alpha.CustomerService.Dto.ResponceStructure;
 import com.alpha.CustomerService.Dto.RidefairDTO;
 import com.alpha.CustomerService.Dto.SearchDestinationResponeDto;
 import com.alpha.CustomerService.Dto.SelectRideDTO;
+import com.alpha.CustomerService.Entity.Booking;
 import com.alpha.CustomerService.Entity.Customer;
 import com.alpha.CustomerService.Service.CustomerService;
 
@@ -26,7 +27,7 @@ public class CustomerController {
 	private CustomerService customerService;
 	
 	@PostMapping("/create/createAccount")
-	public Customer createCustomer(@RequestBody CustomerDto custDto) {
+	public ResponceStructure<Customer> createCustomer(@RequestBody CustomerDto custDto) {
 		return customerService.CreateCustomer(custDto);
 	}
 	
@@ -35,7 +36,7 @@ public class CustomerController {
 		return customerService.DeleteCustomer(custid);
 	}
 	@GetMapping("/customer/findcustomer/{id}")
-	public Customer findCustomer(@PathVariable int id) {
+	public ResponceStructure<Customer> findCustomer(@PathVariable int id) {
 		return customerService.findCustomer(id);
 	}
 	@GetMapping("/customer/searchdroplocation")
@@ -48,7 +49,7 @@ public class CustomerController {
 	}
 	
 	@PostMapping("/customer/Booking")
-	public void BookRide(@RequestParam int custId, String vehicle) {
-		customerService.bookRide(custId,vehicle);
+	public ResponceStructure<Booking> BookRide(@RequestParam int custId, String vehicle, String paymentType) {
+		return customerService.bookRide(custId,vehicle,paymentType);
 	}
 }
