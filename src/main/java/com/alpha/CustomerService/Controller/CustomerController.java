@@ -26,6 +26,12 @@ public class CustomerController {
 	@Autowired
 	private CustomerService customerService;
 	
+	
+	@GetMapping("/hello")
+	public void hellomthod() {
+		System.out.println("THIS IS HELLLO ");
+	}
+	
 	@PostMapping("/create/createAccount")
 	public ResponceStructure<Customer> createCustomer(@RequestBody CustomerDto custDto) {
 		return customerService.CreateCustomer(custDto);
